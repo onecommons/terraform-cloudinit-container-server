@@ -2,7 +2,6 @@ module "container-server" {
   source = "../.."
 
   domain = "app.${var.domain}"
-  email  = var.email
 
   letsencrypt_staging = true # delete this or set to false to enable production Let's Encrypt certificates
   enable_webhook      = true

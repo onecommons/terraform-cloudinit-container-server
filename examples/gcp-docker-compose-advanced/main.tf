@@ -2,7 +2,6 @@ module "container-server" {
   source = "../.."
 
   domain = var.domain
-  email  = var.email
 
   files = [
     {

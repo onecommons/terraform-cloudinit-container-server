@@ -5,17 +5,6 @@ variable "domain" {
   type        = string
 }
 
-variable "email" {
-  description = "The email address used for requesting certificates from Lets Encrypt."
-  type        = string
-}
-
-variable "letsencrypt_staging" {
-  description = "Boolean flag to decide whether the Let's Encrypt staging server should be used."
-  type        = bool
-  default     = false
-}
-
 variable "files" {
   description = "User files to be copied to the application's working directory (`/var/app`). The file's content must be provided to Terraform as a base64 encoded string."
   type        = list(object({ filename : string, content : string }))

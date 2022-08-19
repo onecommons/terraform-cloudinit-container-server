@@ -2,7 +2,6 @@ module "container-server" {
   source = "../.."
 
   domain = "app.${var.domain}"
-  email  = var.email
 
   container = {
     image = "nginxdemos/hello"
