@@ -19,7 +19,7 @@ services:
     labels:
       caddy: "${DOMAIN}"
       caddy.@wh_method: method ${WEBHOOK_HTTP_METHOD}
-      caddy.reverse_proxy: "@wh_method" "/${WEBHOOK_URL_PREFIX:-hooks}" {{upstreams}}
+      caddy.reverse_proxy: "@wh_method /${WEBHOOK_URL_PREFIX:-hooks} {{upstreams}}"
 networks:
   default:
     external:
