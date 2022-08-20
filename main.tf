@@ -36,7 +36,7 @@ locals {
     CADDY_IMAGE_TAG            = null
     CADDY_LOG_LEVEL            = null
     CADDY_OPS_PORT             = null
-    CADDY_ADMIN_PORT           = 'off'
+    CADDY_ADMIN_PORT           = "off"
     WEBHOOK_URL_PREFIX         = var.enable_webhook ? "hooks" : null
     WEBHOOK_HTTP_METHOD        = var.enable_webhook ? "PATCH" : null
   }, var.env)
