@@ -1,5 +1,4 @@
 domain             = "foo"
-letsencrypt_email  = "bar@example.net"
 portainer_password = "foobar"
 base_resource_name = "dockerdemo"
 location           = "australiaeast"

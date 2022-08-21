@@ -9,7 +9,6 @@ module "container-server" {
   source = "../.."
 
   domain = "app.${var.domain}"
-  email  = var.email
 
   letsencrypt_staging = true # delete this or set to false to enable production Let's Encrypt certificates
   enable_webhook      = true # webhook protected by basic auth
@@ -62,7 +61,6 @@ curl \
 | -------------- | -------------------------------------------------------------------- | -------- | ------- | :------: |
 | cloud_dns_zone | Cloud DNS zone name.                                                 | `string` | n/a     |   yes    |
 | domain         | The domain where the app will be hosted.                             | `string` | n/a     |   yes    |
-| email          | Email address used when registering certificates with Let's Encrypt. | `string` | n/a     |   yes    |
 | project        | The ID of the project in which to provision resources.               | `string` | n/a     |   yes    |
 | region         | Google Cloud region where the instance will be created.              | `string` | n/a     |   yes    |
 | subnet_name    | The name of the subnet where the instance will be created.           | `string` | n/a     |   yes    |

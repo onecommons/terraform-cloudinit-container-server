@@ -8,7 +8,7 @@ No external dependencies.
 
 No proprietary frameworks.
 
-Just plain ol' `docker`, `docker-compose` and `systemd` — deployed with `cloud-init` using a single, cloud-agnostic configuration script.
+Just plain ol' `docker`, `docker-compose` and `systemd` - deployed with `cloud-init` using a single, cloud-agnostic configuration script.
 
 # What does it do?
 
@@ -74,11 +74,11 @@ Some cloud Terraform resources expect the content to first be base64 encoded (e.
 
 ## Example 1: Deploying a single container image
 
-The fastest way to get started is to deploy a single image. All you need to specify is the image you want to deploy. The module's `container` input variable accepts any attribute normally found under Docker Compose's `service` key ([docs](https://docs.docker.com/compose/compose-file/#service-configuration-reference)). You may find that `image` and `ports` are all you need to define to get your container up and running.
+The fastest way to get started is to deploy a single image. All you need to specify is the image you want to deploy. The module's `container` input variable accepts any attribute normally found under Docker Compose's `service` key ([docs](https://docs.docker.com/compose/compose-file/#service-configuration-reference)). You may find that `image` and `ports` are all you need to define to get your container up and running. Ports `80` and `443` are exposed by default via a Caddy proxy.
 
-Other than the `container`, the other variables we need to provide values for are `domain` and `email`, these are needed for Let's Encrypt to provision an SSL certificate for your domain.
+Other than the `container`, the only other variable needed is the `domain` for the DNS record and for Caddy to request certificates.
 
-Don't want to trip the rate limit for Let's Encrypt while you're still getting things set up? Set `letsencrypt_staging` to `True` until you're confident things are working just right.
+Caddy will use either Let's Encrypt or ZeroSSL to automatically generate HTTPS certificates. Details on how this is done, including rate limiting and back-off, is available in the [Caddy documentation](https://caddyserver.com/docs/automatic-https).
 
 ```hcl
 module "container-server" {
@@ -86,9 +86,6 @@ module "container-server" {
   version = "~> 1.2"
 
   domain = "example.com"
-  email  = "me@example.com"
-
-  letsencrypt_staging = true
 
   container = {
     image   = "nginxdemos/hello"
@@ -106,7 +103,6 @@ module "container-server" {
   version = "~> 1.2"
 
   domain = "example.com"
-  email  = "me@example.com"
 
   files = [
     {
@@ -117,11 +113,11 @@ module "container-server" {
 }
 ```
 
-Keep in mind when providing your own `docker-compose.yaml` file that you'll need to manually define the labels on your service so that Traefik can identify and route requests to your application.
+Keep in mind when providing your own `docker-compose.yaml` file that you'll need to manually define the labels on your service so that Caddy can identify and route requests to your application.
 
-Traefik is a wonderful tool with a lot of functionality and configuration options, however it can be a bit intimidating to set up if you're not familiar with it. Inspecting the template included in this module is a good starting point if you need help creating your own Docker Compose file. These labels need to be added to every service defined in your Docker Compose file that you want to make available externally.
+Caddy is a wonderful tool with a lot of functionality and configuration options, but can be daunting to configure. The example below shows the needed labels for Caddy to pick up the service. Inspecting the template included in this module is a good starting point if you need help creating your own Docker Compose file. These labels need to be added to every service defined in your Docker Compose file that you want to make available externally.
 
-For more advanced options, refer to the official [Traefik documentation](https://docs.traefik.io/).
+For more advanced options, refer to the official [Caddy documentation](https://caddyserver.com/docs/) and the [Caddy Docker proxy documentation](https://github.com/lucaslorentz/caddy-docker-proxy).
 
 ```yaml
 # docker-compose.yaml
@@ -136,23 +132,21 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`${domain}`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls=true"
-      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      caddy: ${DOMAIN}
+      caddy.reverse_proxy: {{upstreams}}
 networks:
   default:
     external:
       name: web
 ```
 
-### Some extra information about Traefik
+### Some extra information about Caddy
 
-- 🔗 Traefik connects to services over the `web` Docker network by default — all service(s) you want exposed need to be on this network.
-- 🔒 Let's Encrypt is configured to use the `letsencrypt` certificate resolver from Traefik. Refer to the example `docker-compose.yaml` file above for the labels needed to enable and configure this feature.
+- 🔗 Caddy connects to services over the `web` Docker network by default - all service(s) you want exposed need to be on this network.
+- 🔒 Caddy will automatically fetch HTTPS certificates from Let's Encrypt or ZeroSSL automatically for all domains specified.
 - 📋 Almost all configuration options end up as environment variables defined in a `.env` file saved to the virtual machine. These values are read by Docker Compose on start-up and can be used to parameterise your Docker Compose file without impacting its use in other environments (such as running `docker-compose` locally).
-- 📊 The module provides an option for enabling Traefik's [monitoring dashboard](https://docs.traefik.io/operations/dashboard/) and API. When enabled, the dashboard is accessible from `https://${domain}:9000/dashboard/` and the API from `https://${domain}:9000/api/`. The port used by Traefik can be customised using the `TRAEFIK_OPS_PORT` environment variable.
+- 📊 Caddy does not have a dashboard, but does have a `/metrics` endpoint for Prometheus. This is exposed on `2019` if the `CADDY_METRICS` environment variable is set. The port used for this can be customised using the `CADDY_METRICS_PORT` environment variable.
+- 🔨 The admin api for Caddy is disabled by default, as all config should be autogenerated from the Docker labels. If you need access the API, set `CADDY_ADMIN_PORT`.
 
 # Example integrations with AWS, Google Cloud, Azure and DigitalOcean
 
@@ -256,13 +250,11 @@ resource "digitalocean_droplet" "vm" {
 | Name                | Description                                                                                                                    | Type                                                        | Default | Required |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- | ------- | :------: |
 | domain              | The domain to deploy applications under.                                                                                       | `string`                                                    | n/a     |   yes    |
-| email               | The email address used for requesting certificates from Lets Encrypt.                                                          | `string`                                                    | n/a     |   yes    |
 | cloudinit_part      | Supplementary cloud-init config used to customise the instance.                                                                | `list(object({ content_type : string, content : string }))` | `[]`    |    no    |
 | container           | The container definition used to deploy a Docker image to the server. Follows the same schema as a Docker Compose service.     | `any`                                                       | `{}`    |    no    |
 | enable_webhook      | Flag whether to enable the webhook endpoint on the server, allowing updates to be made independent of Terraform.               | `bool`                                                      | `false` |    no    |
 | env                 | A list environment variables provided as key/value pairs. These can be used to interpolate values within Docker Compsoe files. | `map(string)`                                               | `{}`    |    no    |
 | files               | A list of files to upload to the server. Content must be base64 encoded. Files are available under the `/run/app/` directory.  | `list(object({ filename : string, content : string }))`     | `[]`    |    no    |
-| letsencrypt_staging | Boolean flag to decide whether the Let's Encrypt staging server should be used.                                                | `bool`                                                      | `false` |    no    |
 
 ## Outputs
 

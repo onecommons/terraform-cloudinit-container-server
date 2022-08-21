@@ -65,7 +65,6 @@ resource "google_compute_instance" "app_server" {
 | ------------------ | -------------------------------------------------------------------- | -------- | ------- | :------: |
 | cloud_dns_zone     | Cloud DNS zone name.                                                 | `string` | n/a     |   yes    |
 | domain             | The domain where the app will be hosted.                             | `string` | n/a     |   yes    |
-| email              | Email address used when registering certificates with Let's Encrypt. | `string` | n/a     |   yes    |
 | project            | The ID of the project in which to provision resources.               | `string` | n/a     |   yes    |
 | region             | Google Cloud region where the instance will be created.              | `string` | n/a     |   yes    |
 | subnet_name        | The name of the subnet where the instance will be created.           | `string` | n/a     |   yes    |

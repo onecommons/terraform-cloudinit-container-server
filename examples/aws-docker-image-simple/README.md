@@ -9,7 +9,6 @@ module "container-server" {
   source = "../.."
 
   domain = "app.${var.domain}"
-  email  = var.email
 
   container = {
     image = "nginxdemos/hello"
@@ -37,7 +36,6 @@ resource "aws_instance" "app" {
 | Name    | Description                                                          | Type     | Default | Required |
 | ------- | -------------------------------------------------------------------- | -------- | ------- | :------: |
 | domain  | The domain where the app will be hosted.                             | `string` | n/a     |   yes    |
-| email   | Email address used when registering certificates with Let's Encrypt. | `string` | n/a     |   yes    |
 | zone_id | Route53 Zone ID.                                                     | `string` | n/a     |   yes    |
 
 ## Outputs

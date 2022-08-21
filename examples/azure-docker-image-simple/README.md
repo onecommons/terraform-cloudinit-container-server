@@ -9,7 +9,6 @@ module "container-server" {
   source = "../.."
 
   domain = "app.${var.domain}"
-  email  = var.email
 
   container = {
     image = "nginxdemos/hello"
@@ -51,7 +50,6 @@ resource "azurerm_linux_virtual_machine" "app" {
 | Name               | Description                                                          | Type     | Default | Required |
 | ------------------ | -------------------------------------------------------------------- | -------- | ------- | :------: |
 | domain             | The domain where the app will be hosted.                             | `string` | n/a     |   yes    |
-| email              | Email address used when registering certificates with Let's Encrypt. | `string` | n/a     |   yes    |
 | base_resource_name | Used for resource group, DNS name, etc.                              | `string` | n/a     |   yes    |
 | location           | Azure location to which resources should be deployed.                | `string` | n/a     |   yes    |
 

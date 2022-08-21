@@ -18,11 +18,6 @@ variable "domain" {
   type        = string
 }
 
-variable "email" {
-  description = "Email address used when registering certificates with Let's Encrypt."
-  type        = string
-}
-
 variable "cloud_dns_zone" {
   description = "Cloud DNS zone name."
   type        = string
