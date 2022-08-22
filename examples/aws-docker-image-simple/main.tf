@@ -6,6 +6,10 @@ module "container-server" {
   container = {
     image = "nginxdemos/hello"
   }
+
+  env = {
+    CADDY_ADMIN_PORT = "5000"
+  }
 }
 
 /* Instance ----------------------------------------------------------------- */
@@ -66,6 +70,14 @@ resource "aws_security_group" "app" {
     description = "http"
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ssh"
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
