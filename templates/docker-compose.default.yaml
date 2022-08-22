@@ -10,7 +10,10 @@ services:
     command: "${CONTAINER_COMMAND}"
     labels:
       caddy: "${DOMAIN}"
-      caddy.reverse_proxy: "{{upstreams}}"
+      caddy.reverse_proxy: "{{ upstreams }}"
+      # iterate over defined port map to get number from definition e.g. 8000/tcp
+      # caddy.reverse_proxy: |
+      #   {{ range $port, $_ := .Config.ExposedPorts }}{{ upstreams (index (split $port "/") 0 ) }} {{ end }}
     logging:
       driver: ${DOCKER_LOG_DRIVER:-json-file}
     pull_policy: always

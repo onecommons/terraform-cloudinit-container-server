@@ -5,7 +5,7 @@ services:
     # see https://github.com/lucaslorentz/caddy-docker-proxy
     restart: unless-stopped
     image: "lucaslorentz/caddy-docker-proxy:${CADDY_IMAGE_TAG:-2.7-alpine}"
-    container_name: "traefik"
+    container_name: "caddy"
     environment:
       - "CADDY_INGRESS_NETWORKS=${DOCKER_NETWORK:-web}"
     ports:
@@ -14,14 +14,16 @@ services:
       - "${CADDY_ADMIN_PORT-2019}:${CADDY_ADMIN_PORT-2019}"
     volumes:
       - "./.caddy:/data"
+      - "./:/app"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       # disable the admin api unless the port is requested
       # it should not be public since it allows messing with the config
-      caddy.admin: ":${CADDY_ADMIN_PORT-off}"
-      caddy.metrics: "/${CADDY_METRICS_PATH-metrics} :${CADDY_METRICS_PORT-2019}"
+      # conditional here is to render :PORT if set, off if not
+      caddy.admin: |
+        {{ with "$CADDY_ADMIN_PORT" }}:${CADDY_ADMIN_PORT}{{ else }}off{{}}
       caddy.log.level: "${CADDY_LOG_LEVEL:-info}"
-      caddy.reverse_proxy: "{{upstreams $CONTAINER_PORT}}"
+      # caddy.metrics: "/${CADDY_METRICS_PATH-metrics} :${CADDY_METRICS_PORT-2019}"
     logging:
       driver: ${DOCKER_LOG_DRIVER:-journald}
 networks:
