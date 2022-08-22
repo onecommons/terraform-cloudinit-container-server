@@ -29,7 +29,7 @@ locals {
     IMAGE_TAG                  = try(split(":", local.image)[1], "latest")
     CONTAINER_NAME             = lookup(var.container, "container_name", null)
     CONTAINER_COMMAND          = lookup(var.container, "command", null)
-    CONTAINER_PORT             = lookup(var.container, "port", null)
+    CONTAINER_PORT             = var.port
     DOCKER_NETWORK             = "web"
     DOCKER_LOG_DRIVER          = null
     CADDY_ENABLED              = null

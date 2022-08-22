@@ -21,6 +21,7 @@ services:
       caddy.admin: ":${CADDY_ADMIN_PORT-off}"
       caddy.metrics: "/${CADDY_METRICS_PATH-metrics} :${CADDY_METRICS_PORT-2019}"
       caddy.log.level: "${CADDY_LOG_LEVEL:-info}"
+      caddy.reverse_proxy: "{{upstreams $CONTAINER_PORT}}"
     logging:
       driver: ${DOCKER_LOG_DRIVER:-journald}
 networks:

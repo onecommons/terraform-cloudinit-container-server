@@ -23,6 +23,12 @@ variable "container" {
   default     = {}
 }
 
+variable "port" {
+  description = "The source port on the container for caddy to proxy"
+  type        = number
+  default     = 80
+}
+
 variable "cloudinit_part" {
   description = "Additional cloud-init configuration used to setup and/or customise the instance beyond the defaults provided by this module."
   type        = list(object({ content_type : string, content : string }))
