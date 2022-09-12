@@ -105,11 +105,11 @@ locals {
       content = filebase64("${local.template_dir}/docker-compose.webhook.yaml") },
       {
         filename = ".webhook/hooks.json"
-        content  = filebase64("${local.template_dir}/webook/hooks.json")
+        content  = filebase64("${local.template_dir}/webhook/hooks.json")
       },
       {
         filename = ".webhook/update-env.sh"
-        content  = filebase64("${local.template_dir}/webook/update-env.sh")
+        content  = filebase64("${local.template_dir}/webhook/update-env.sh")
       }
     ] : [],
 
