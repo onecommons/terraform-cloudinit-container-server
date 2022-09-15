@@ -25,8 +25,7 @@ locals {
     DOMAIN                     = var.domain
     COMPOSE_DOCKER_IMAGE       = "docker/compose"
     COMPOSE_DOCKER_TAG         = "1.29.2"
-    IMAGE_NAME                 = try(split(":", local.image)[0], null)
-    IMAGE_TAG                  = try(split(":", local.image)[1], "latest")
+    IMAGE_NAME                 = local.image
     CONTAINER_NAME             = lookup(var.container, "container_name", null)
     CONTAINER_COMMAND          = lookup(var.container, "command", null)
     CONTAINER_PORT             = var.port
