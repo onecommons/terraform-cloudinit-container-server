@@ -17,13 +17,11 @@ services:
       - "./:/app"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
-      # disable the admin api unless the port is requested
-      # it should not be public since it allows messing with the config
-      # conditional here is to render :PORT if set, off if not
-      caddy.admin: |
-        {{ with "$CADDY_ADMIN_PORT" }}:${CADDY_ADMIN_PORT}{{ else }}off{{}}
+      # restrict admin API to localhost only (inside the caddy container)
+      # cannot be "off" since the docker proxy plugin talks to it
+      caddy.admin.origins: "localhost"
       caddy.log.level: "${CADDY_LOG_LEVEL:-info}"
-      # caddy.metrics: "/${CADDY_METRICS_PATH-metrics} :${CADDY_METRICS_PORT-2019}"
+      caddy.metrics: "/${CADDY_METRICS_PATH-metrics} :${CADDY_METRICS_PORT-2019}"
     logging:
       driver: ${DOCKER_LOG_DRIVER:-journald}
 networks:
