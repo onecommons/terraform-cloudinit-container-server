@@ -77,7 +77,7 @@ runcmd:
   - docker login ${login}
 %{ endif }
   - |
-    while ! docker pull '${image}'; do
+    while ! yes | docker pull '${image}'; do
       echo '${image} not available yet. Sleeping for 30 seconds';
       sleep 30;
     done
