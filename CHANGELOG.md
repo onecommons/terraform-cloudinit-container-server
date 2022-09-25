@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 - Switched from Traefik proxy to Caddy proxy, for simpler config
 - Remove Lets Encrypt email settings and instead rely on Caddy's default auto-HTTPS
+- Use `docker compose` binary instead of compose container
 
 ### [1.2.1](https://github.com/christippett/terraform-cloudinit-container-server/compare/v1.2.0...v1.2.1) (2021-04-14)
 
